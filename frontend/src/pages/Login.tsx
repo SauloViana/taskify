@@ -1,20 +1,26 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import api from "../services/api";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const { login } = useAuth();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         try {
-            const res = await api.post("auth/login", { email, password });
-            localStorage.setItem("access", res.data.access);
-            localStorage.setItem("refresh", res.data.refresh);
-            alert("Login realizado!");
-        } catch (err) {
-            alert("Erro no login!");
-            console.log(err);
+            const res = await api.post("/auth/login", { email, password });
+            const data = res.data
+            console.log(data);
+            login(data['access'], email);
+            alert("Login efetuado com sucesso!");
+            navigate("/dashboard");
+        } catch (error) {
+            throw new Error("Falha no login: " + error);
         }
     };
 
