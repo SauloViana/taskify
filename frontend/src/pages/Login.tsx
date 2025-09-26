@@ -1,7 +1,8 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -13,14 +14,37 @@ export default function Login() {
         e.preventDefault();
 
         try {
-            const res = await api.post("auth/login/", { email, password });
-            const data = res.data
-            console.log(data);
-            login(data['access'], email);
-            alert("Login efetuado com sucesso!");
-            navigate("/dashboard");
+            const doLogin = async () => {
+                const res = await api.post("auth/login/", { email, password });
+                const data = res.data
+                login(data['access'], email);
+            };
+            toast.promise(
+                doLogin,
+                {
+                    pending: {
+                        render() {
+                            return "Efetuando o login..."
+                        }
+                    },
+                    success: {
+                        render() {
+                            return "Login efetuado com sucesso! Você será redirecionado."
+                        },
+                        onClose() {
+                            navigate("/dashboard");
+                        },
+                        autoClose: 2000
+                    },
+                    error: {
+                        render() {
+                            return "Não foi possível efetuar o login, verifique o Email e Senha."
+                        }
+                    }
+                },
+            );
         } catch (error) {
-            throw new Error("Falha no login: " + error);
+            toast.error("Não foi possível efetuar o login, verifique o Email e Senha.");
         }
     };
 
@@ -44,6 +68,7 @@ export default function Login() {
                 />
                 <button className="w-full bg-blue-700 text-white py-2 rounded">Entrar</button>
             </form>
+            <ToastContainer />
         </div>
     )
 }
