@@ -2,7 +2,7 @@ import { useState } from "react";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 export default function Login() {
     const [email, setEmail] = useState("");
@@ -68,7 +68,6 @@ export default function Login() {
                 />
                 <button className="w-full bg-blue-700 text-white py-2 rounded">Entrar</button>
             </form>
-            <ToastContainer />
         </div>
     )
 }
